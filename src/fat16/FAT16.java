@@ -1,22 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 package fat16;
+
+import java.util.BitSet;
 
 /**
  *
  * @author ragindemon
  */
 public class FAT16 {
-
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String[] args) {
-        // TODO code application logic here
+        BitSet bits = new BitSet(128);
+        for (int i = 0; i < bits.size(); i++) {
+            if (i % 2 == 0) {
+                bits.set(i);
+            }
+        }
+        System.out.println("size of bitset: "+bits.size()+ " bits en el bit set: \n" + bits.toString());
+        System.out.println("bitset to byte array:");
+        byte[] array = bits.toByteArray();        
+        for (byte b : array) {
+            System.out.print(b + ", ");
+        }        
     }
     
 }
