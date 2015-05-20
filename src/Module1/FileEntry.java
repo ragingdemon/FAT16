@@ -63,7 +63,7 @@ public class FileEntry {
 
     public void setName(String str) {
         byte[] toByte = str.getBytes();
-        for (int i = 0; i < toByte.length && i < 4; i++) {
+        for (int i = 0; i < toByte.length && i < 11; i++) {
             name[i] = toByte[i];
         }
     }
