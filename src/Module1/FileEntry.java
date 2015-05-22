@@ -102,4 +102,14 @@ public class FileEntry {
         file.writeInt(file_size);
         file.write(reserved);
     }
+    
+    public void readEntryFromFile(RandomAccessFile file) throws IOException {
+        firts_file_byte = file.readByte();
+        file.read(name);        
+        attributes = file.readByte();
+        date = file.readLong();
+        start_cluster = file.readShort();
+        file_size = file.readInt();
+        file.read(reserved);
+    }
 }

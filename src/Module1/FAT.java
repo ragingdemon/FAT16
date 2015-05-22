@@ -35,6 +35,7 @@ class fatElement {
 
 //Bitset memory size = 65536 bit = 8 KB = 2 clusters
 //fatElement[] memory size = 65536 * 2 B = 128 KB = 32 clusters
+//los bit seteado en 1 significa que el cluster es disponible
 public class FAT {
 
     private fatElement[] fat_array = new fatElement[65536]; //2^16
@@ -42,6 +43,10 @@ public class FAT {
 
     public FAT() {
         bit_map = new BitSet(65536); //2^16
+        bit_map.set(37, 65535,true); //los clusters de 0-36 son reservados por el root y el fat
+        for (int i = 0; i < fat_array.length; i++) {
+            fat_array[i] = new fatElement();
+        }
     }
 
     public FAT(RandomAccessFile file) throws IOException {
@@ -69,4 +74,11 @@ public class FAT {
         this.bit_map = bit_map;
     }
 
+    
+    public void writeFatToFile(RandomAccessFile file) throws IOException{
+        file.write(bit_map.toByteArray());
+        for (fatElement element : fat_array) {
+            element.writeFatElementToFile(file);
+        }
+    }
 }
