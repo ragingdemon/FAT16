@@ -24,10 +24,10 @@ class fatElement {
         next = file.readShort();
     }
 
-    public void readFatElementFromFile(RandomAccessFile file) throws IOException{
+    public void readFatElementFromFile(RandomAccessFile file) throws IOException {
         next = file.readShort();
     }
-    
+
     public void writeFatElementToFile(RandomAccessFile file) throws IOException {
         file.writeShort(next);
     }
@@ -43,18 +43,20 @@ public class FAT {
 
     public FAT() {
         bit_map = new BitSet(65536); //2^16
-        bit_map.set(37, 65535,true); //los clusters de 0-36 son reservados por el root y el fat
+        bit_map.set(37, 65535, true); //los clusters de 0-36 son reservados por el root y el fat
         for (int i = 0; i < fat_array.length; i++) {
             fat_array[i] = new fatElement();
         }
     }
 
     public FAT(RandomAccessFile file) throws IOException {
-        byte[] array = new byte[8192]; //8KB
-        file.read(array);
-        bit_map = BitSet.valueOf(array);
-        for (fatElement f : fat_array) {
-            f.readFatElementFromFile(file);
+        synchronized (file) {
+            byte[] array = new byte[8192]; //8KB
+            file.read(array);
+            bit_map = BitSet.valueOf(array);
+            for (int i = 0; i < fat_array.length; i++) {
+                fat_array[i] = new fatElement(file);
+            }
         }
     }
 
@@ -74,11 +76,13 @@ public class FAT {
         this.bit_map = bit_map;
     }
 
-    
-    public void writeFatToFile(RandomAccessFile file) throws IOException{
-        file.write(bit_map.toByteArray());
-        for (fatElement element : fat_array) {
-            element.writeFatElementToFile(file);
+    public void writeFatToFile(RandomAccessFile file) throws IOException {
+        synchronized (file) {
+            file.seek(16384);
+            file.write(bit_map.toByteArray());
+            for (fatElement element : fat_array) {
+                element.writeFatElementToFile(file);
+            }
         }
     }
 }

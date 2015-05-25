@@ -2,7 +2,6 @@
 
 package fat16;
 
-import java.util.BitSet;
 import Module1.*;
 import java.io.RandomAccessFile;
 /**
@@ -15,7 +14,7 @@ public class FAT16 {
         try {
             RandomAccessFile f = new RandomAccessFile("FAT16","rw");
             FAT fat = new FAT();
-            FileEntryArray fea = new FileEntryArray(512);
+            FileEntryArray fea = new FileEntryArray(512,0);
             fea.writeFileEntryArrayToFile(f);
             fat.writeFatToFile(f);
             f.close();

@@ -5,7 +5,7 @@ import java.io.RandomAccessFile;
 import java.util.Date;
 
 public class FileEntry {
-    
+
     private byte firts_file_byte; //0
     private byte[] name = new byte[10]; //1-10
     private byte attributes; //11
@@ -13,7 +13,7 @@ public class FileEntry {
     private short start_cluster; //20-21
     private int file_size; ////22-25
     private byte[] reserved = new byte[6]; //26-31;
-    
+
     //File attributes
     public static final byte READ_ONLY = 0x01;
     public static final byte HIDDEN_FILE = 0x02;
@@ -21,7 +21,7 @@ public class FileEntry {
     public static final byte VOLUME_LABEL = 0x08;
     public static final byte LONG_FILE_NAME = 0x0f;
     public static final byte DIRECTORY = 0x10;
-    public static final byte ARCHIVE = 0x20;            
+    public static final byte ARCHIVE = 0x20;
 
     public FileEntry() {
         firts_file_byte = 0;
@@ -31,14 +31,17 @@ public class FileEntry {
         file_size = 0;
     }
 
-    public FileEntry(RandomAccessFile file) throws IOException {
-        firts_file_byte = file.readByte();
-        file.read(name);        
-        attributes = file.readByte();
-        date = file.readLong();
-        start_cluster = file.readShort();
-        file_size = file.readInt();
-        file.read(reserved);
+    public FileEntry(RandomAccessFile file, long offset) throws IOException {
+        synchronized (file) {
+            file.seek(offset);
+            firts_file_byte = file.readByte();
+            file.read(name);
+            attributes = file.readByte();
+            date = file.readLong();
+            start_cluster = file.readShort();
+            file_size = file.readInt();
+            file.read(reserved);
+        }
     }
 
     public byte getAttributes() {
@@ -93,23 +96,29 @@ public class FileEntry {
         this.file_size = file_size;
     }
 
-    public void writeEntryToFile(RandomAccessFile file) throws IOException {
-        file.writeByte(firts_file_byte);
-        file.write(name);
-        file.writeByte(attributes);
-        file.writeLong(date);
-        file.writeShort(start_cluster);
-        file.writeInt(file_size);
-        file.write(reserved);
+    public void writeEntryToFile(RandomAccessFile file, long offset) throws IOException {
+        synchronized (file) {
+            file.seek(offset);
+            file.writeByte(firts_file_byte);
+            file.write(name);
+            file.writeByte(attributes);
+            file.writeLong(date);
+            file.writeShort(start_cluster);
+            file.writeInt(file_size);
+            file.write(reserved);
+        }
     }
-    
-    public void readEntryFromFile(RandomAccessFile file) throws IOException {
-        firts_file_byte = file.readByte();
-        file.read(name);        
-        attributes = file.readByte();
-        date = file.readLong();
-        start_cluster = file.readShort();
-        file_size = file.readInt();
-        file.read(reserved);
+
+    public void readEntryFromFile(RandomAccessFile file, long offset) throws IOException {
+        synchronized (file) {
+            file.seek(offset);
+            firts_file_byte = file.readByte();
+            file.read(name);
+            attributes = file.readByte();
+            date = file.readLong();
+            start_cluster = file.readShort();
+            file_size = file.readInt();
+            file.read(reserved);
+        }
     }
 }
