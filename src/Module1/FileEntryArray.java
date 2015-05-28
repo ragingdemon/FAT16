@@ -9,6 +9,9 @@ public class FileEntryArray {
 
     public FileEntry[] array;
     private long offset;
+    
+    public static final int ROOT = 512;
+    public static final int DIR = 128;
 
     public FileEntryArray(int n, long offset) {
         array = new FileEntry[n];
@@ -30,5 +33,36 @@ public class FileEntryArray {
         for (int i = 0; i < array.length; i++) {
             array[i].writeEntryToFile(file, offset + 32 * i);
         }
+    }
+
+    public int indexFreeEntry() {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].getStart_cluster() == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+        
+    public long offsetFreeEntry() {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].getStart_cluster() == 0) {
+                return offset + i * 32;
+            }
+        }
+        return -1;
+    }    
+    
+    public void setFileEntry(FileEntry entry){
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].getStart_cluster() == 0) {
+                array[i] = entry;
+                break;
+            }
+        }
+    }
+    
+    public void setFileEntry(FileEntry entry, int n){
+        array[n] = entry;
     }
 }

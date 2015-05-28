@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class FileEntry {
 
-    private byte firts_file_byte; //0
+    private byte first_file_byte; //0
     private byte[] name = new byte[10]; //1-10
     private byte attributes; //11
     private long date; //12-19
@@ -22,19 +22,29 @@ public class FileEntry {
     public static final byte LONG_FILE_NAME = 0x0f;
     public static final byte DIRECTORY = 0x10;
     public static final byte ARCHIVE = 0x20;
+    public static final int SIZE = 32;
 
     public FileEntry() {
-        firts_file_byte = 0;
+        first_file_byte = 0;
         date = 0;
         attributes = 0;
         start_cluster = 0;
         file_size = 0;
     }
 
+    public FileEntry(byte attributes, String name, long date, short start_cluster, int file_size) {
+        first_file_byte = 0x0f;
+        this.attributes = attributes;
+        setName(name);
+        this.date = date;
+        this.start_cluster = start_cluster;
+        this.file_size = file_size;
+    }
+
     public FileEntry(RandomAccessFile file, long offset) throws IOException {
         synchronized (file) {
             file.seek(offset);
-            firts_file_byte = file.readByte();
+            first_file_byte = file.readByte();
             file.read(name);
             attributes = file.readByte();
             date = file.readLong();
@@ -52,12 +62,12 @@ public class FileEntry {
         this.attributes = attributes;
     }
 
-    public byte getFirts_file_byte() {
-        return firts_file_byte;
+    public byte getFirst_file_byte() {
+        return first_file_byte;
     }
 
-    public void setFirts_file_byte(byte firts_file_byte) {
-        this.firts_file_byte = firts_file_byte;
+    public void setFirst_file_byte(byte first_file_byte) {
+        this.first_file_byte = first_file_byte;
     }
 
     public byte[] getName() {
@@ -99,7 +109,7 @@ public class FileEntry {
     public void writeEntryToFile(RandomAccessFile file, long offset) throws IOException {
         synchronized (file) {
             file.seek(offset);
-            file.writeByte(firts_file_byte);
+            file.writeByte(first_file_byte);
             file.write(name);
             file.writeByte(attributes);
             file.writeLong(date);
@@ -112,7 +122,7 @@ public class FileEntry {
     public void readEntryFromFile(RandomAccessFile file, long offset) throws IOException {
         synchronized (file) {
             file.seek(offset);
-            firts_file_byte = file.readByte();
+            first_file_byte = file.readByte();
             file.read(name);
             attributes = file.readByte();
             date = file.readLong();

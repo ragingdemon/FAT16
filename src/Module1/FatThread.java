@@ -7,16 +7,15 @@ package Module1;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author ragindemon
  */
-public class FatThread extends Thread{
-    private FAT fat;
-    private RandomAccessFile file;
+public class FatThread extends Thread {
+
+    private final FAT fat;
+    private final RandomAccessFile file;
 
     public FatThread(FAT fat, RandomAccessFile file) {
         this.fat = fat;
@@ -25,10 +24,13 @@ public class FatThread extends Thread{
 
     @Override
     public void run() {
-        try {
-            fat.writeFatToFile(file);
-        } catch (IOException ex) {
-            Logger.getLogger(FatThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        synchronized (file) {
+            try {
+                fat.writeFatToFile(file);
+                wait(5000);
+            } catch (IOException | InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }        
     }
 }
